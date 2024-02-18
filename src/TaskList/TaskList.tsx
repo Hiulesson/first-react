@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import TaskItem from "../TaskItem/TaskItem";
+import TaskItem from '../TaskItem/TaskItem';
 
-// Definindo o tipo para as props
+
 interface TaskListProps {
-    tasks: string[];
+  tasks: { id: number; name: string; completed: boolean }[];
 }
 
-// Componente TaskList
 const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
-
+  const [taskList, setTaskList] = useState(tasks);
   const [newTask, setNewTask] = useState<string>('');
-  const [taskList, setTaskList] = useState<string[]>(tasks);
+  
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask(event.target.value);
@@ -18,18 +17,33 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
 
   const handleAddTask = () => {
     if (newTask.trim() !== '') {
-      setTaskList([...taskList, newTask]); // Adiciona a nova tarefa à lista de tarefas
-      setNewTask(''); // Limpa o campo de entrada de texto
+      const newTaskObject = { id: Date.now(), name: newTask, completed: false };
+      setTaskList([...taskList, newTaskObject]);
+      setNewTask('');
     }
+  };
+
+  const handleToggleTask = (taskId: number) => {
+    const updatedTasks = taskList.map(task => {
+      if (task.id === taskId) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTaskList(updatedTasks);
   };
 
   return (
     <div>
       <h2>Lista de Tarefas</h2>
       <ul>
-        {/* Mapeia as tarefas recebidas como props e renderiza cada uma delas usando o componente TaskItem */}
-        {taskList.map((task, index) => (
-          <TaskItem key={index} task={task} />
+        {taskList.map(task => (
+          <TaskItem
+            key={task.id}
+            task={task.name}
+            completed={task.completed}
+            onToggle={() => handleToggleTask(task.id)}
+          />
         ))}
       </ul>
       <div>
