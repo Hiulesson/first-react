@@ -7,6 +7,7 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+  //Logica do botao Adicionar
   const [taskList, setTaskList] = useState(tasks);
   const [newTask, setNewTask] = useState<string>('');
   
@@ -23,6 +24,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
     }
   };
 
+  //Logica de marcar tarefas
   const handleToggleTask = (taskId: number) => {
     const updatedTasks = taskList.map(task => {
       if (task.id === taskId) {
@@ -33,17 +35,25 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
     setTaskList(updatedTasks);
   };
 
+  //Logica do botão de excluir 
+  const handleDeleteTask = (taskId: number) => {
+    const updatedTasks = taskList.filter(task => task.id !== taskId);
+    setTaskList(updatedTasks);
+  };
+
   return (
     <div>
       <h2>Lista de Tarefas</h2>
       <ul>
         {taskList.map(task => (
-          <TaskItem
-            key={task.id}
-            task={task.name}
-            completed={task.completed}
-            onToggle={() => handleToggleTask(task.id)}
-          />
+          <div key={task.id}>
+            <TaskItem
+              task={task.name}
+              completed={task.completed}
+              onToggle={() => handleToggleTask(task.id)}
+            />
+            <button onClick={() => handleDeleteTask(task.id)}>Excluir</button>
+          </div>
         ))}
       </ul>
       <div>
